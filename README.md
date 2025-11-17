@@ -40,3 +40,18 @@ can be dynamic: `app/blog/[slug]/page.tsx	/blog/my-first-post`.
 
 
 ## Supabase
+Complete backend for web and mobile applications based on FOSS(FREE OPEN SOURCE SOFTWARE).
+
+Its a firebase alternative.
+
+Provide:
+- Backend(infra):
+  - Database
+  - File storage
+  - Edge functions
+- Frontend:
+  - sdks that connect easily the infra into your favorite javascript framework
+
+Gives the ability to manage your postgresql database with an easy to understand UI to provide rest and graphQl apis to use.
+
+Have authentication as well, realtime and lots of features.
