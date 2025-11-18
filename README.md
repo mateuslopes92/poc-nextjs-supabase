@@ -38,6 +38,13 @@ We also have some specific configuration files as `next.config.js` and others fo
 The routes can be nested by folder: `app/blog/page.tsx	/blog	Public route` or
 can be dynamic: `app/blog/[slug]/page.tsx	/blog/my-first-post`.
 
+Route groups and private folders:
+| Path                          | URL   | Pattern Notes                             |
+| :---------------------------- | :---- | :---------------------------------------- |
+| app/(marketing)/page.tsx      | /     | Group omitted from URL                    |
+| app/(shop)/cart/page.tsx      | /cart | Share layouts within (shop)               |
+| app/blog/_components/Post.tsx | —     | Not routable; safe place for UI utilities |
+| app/blog/_lib/data.ts         | —     | Not routable; safe place for utils        |
 
 ## Supabase
 Complete backend for web and mobile applications based on FOSS(FREE OPEN SOURCE SOFTWARE).
