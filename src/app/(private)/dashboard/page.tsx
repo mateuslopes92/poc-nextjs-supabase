@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 
+import Canvas from "@/src/components/canvas";
 import type { Metadata } from "next";
-import { createClient } from "@/utils/supabase/client";
+import TodoList from "@/src/components/todoList";
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -11,73 +12,36 @@ import { createClient } from "@/utils/supabase/client";
 // };
 
 export default function DashboardPage() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [channel, setChannel] = useState<any>(null);
-  const supabase = createClient();
-
-  // Draw a dot on canvas
-  function drawPoint(x: number, y: number, broadcast = true) {
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-    ctx.fillStyle = "#000";
-    ctx.beginPath();
-    ctx.arc(x, y, 3, 0, Math.PI * 2);
-    ctx.fill();
-
-    if (broadcast && channel) {
-      channel.send({
-        type: "broadcast",
-        event: "draw",
-        payload: { x, y },
-      });
-    }
-  }
-
-  // ---- Setup Realtime Channel ----
-  useEffect(() => {
-    const ch = supabase.channel("canvas_room");
-
-    ch.on("broadcast", { event: "draw" }, (payload) => {
-      const { x, y } = payload.payload;
-      drawPoint(x, y, false);
-    });
-
-    ch.subscribe();
-    setChannel(ch);
-
-    return () => {
-      ch.unsubscribe();
-    };
-  }, []);
-
-  // ----- Drawing Logic -----
-  let drawing = false;
-
-  const handleMouseDown = () => (drawing = true);
-  const handleMouseUp = () => (drawing = false);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!drawing) return;
-
-    const canvas = canvasRef.current!;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    drawPoint(x, y, true);
-  };
+  const [activeTab, setActiveTab] = useState("canvas");
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <canvas
-        ref={canvasRef}
-        width={600}
-        height={400}
-        className="border border-gray-400 bg-white cursor-crosshair"
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-      />
+    <div>
+      <ul className="flex flex-wrap text-sm font-medium text-center text-body border-b dark:bg-blend-darken border-gray-200 dark:border-gray-700">
+        <li>
+          <button
+            onClick={() => setActiveTab("canvas")}
+            className={`inline-block p-4 rounded-t-base cursor-pointer ${activeTab === "canvas"
+              ? "text-fg-brand bg-neutral-secondary-soft active"
+              : "hover:text-heading hover:bg-neutral-secondary-soft"
+              }`}
+          >
+            Realtime Canvas
+          </button>
+        </li>
+        <li>
+          <button
+            onClick={() => setActiveTab("todo")}
+            className={`inline-block p-4 rounded-t-base cursor-pointer ${activeTab === "todo"
+              ? "text-fg-brand bg-neutral-secondary-soft active"
+              : "hover:text-heading hover:bg-neutral-secondary-soft"
+              }`}
+          >
+            Todo List(Storage)
+          </button>
+        </li>
+      </ul>
+      {activeTab === "canvas" && <Canvas />}
+      {activeTab === "todo" && <TodoList />}
     </div>
   );
 }
