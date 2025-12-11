@@ -22,6 +22,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+# Storage in Supabase using a json file in Storage bucket
+https://github.com/user-attachments/assets/e32c1c02-d6c3-42cd-a53a-bbb36a240edf
 
 # Realtime Canvas with Supabase realtime
 https://github.com/user-attachments/assets/83b94336-08bd-477c-bca2-b69c31f8ce32
