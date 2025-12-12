@@ -169,3 +169,89 @@ export const createClient = (request: NextRequest) => {
 };
 
 ```
+
+### Policies in supabase to give access to read, write, update and delete on buckets
+In order to be able to call supabase to do crud in buckets is needed to set policy using SQL Editor
+
+*todo-bucket*
+```
+-- Allow authenticated users to INSERT/UPDATE/DELETE files in this bucket
+create policy "Allow authenticated uploads"
+on storage.objects for insert
+to authenticated
+with check (bucket_id = 'todo-bucket');
+
+create policy "Allow authenticated updates"
+on storage.objects for update
+to authenticated
+using (bucket_id = 'todo-bucket')
+with check (bucket_id = 'todo-bucket');
+
+create policy "Allow authenticated deletes"
+on storage.objects for delete
+to authenticated
+using (bucket_id = 'todo-bucket');
+
+-- Allow authenticated users to read files
+create policy "Allow authenticated read"
+on storage.objects for select
+to authenticated
+using (bucket_id = 'todo-bucket');
+
+```
+
+*avatars(bucket)*
+```
+-- Allow authenticated users to INSERT/UPDATE/DELETE files in this bucket
+create policy "Allow authenticated uploads for avatars"
+on storage.objects for insert
+to authenticated
+with check (bucket_id = 'avatars');
+
+create policy "Allow authenticated updates for avatars"
+on storage.objects for update
+to authenticated
+using (bucket_id = 'avatars')
+with check (bucket_id = 'avatars');
+
+create policy "Allow authenticated deletes for avatars"
+on storage.objects for delete
+to authenticated
+using (bucket_id = 'avatars');
+
+-- Allow authenticated users to read files
+create policy "Allow authenticated read avatars"
+on storage.objects for select
+to authenticated
+using (bucket_id = 'avatars');
+```
+
+*profile*
+```
+create table profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  avatar_url text,
+  updated_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- allow logged in users to update only their own profile
+create policy "Users can update own profile"
+on profiles for update
+to authenticated
+using (auth.uid() = id);
+```
+
+and for profile auto provision on user creation
+```
+create function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id) values (new.id);
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_auth_user_created
+after insert on auth.users
+for each row execute procedure public.handle_new_user();
+```
